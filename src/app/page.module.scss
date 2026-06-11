@@ -1,0 +1,156 @@
+.hero {
+  background:
+    radial-gradient(1100px 480px at 80% -10%, rgba(127, 212, 232, 0.35), transparent),
+    linear-gradient(180deg, var(--ice-100), var(--ice-50));
+  padding: 84px 0 64px;
+  text-align: center;
+
+  h1 {
+    font-size: clamp(2.4rem, 5.4vw, 3.9rem);
+    margin-bottom: 18px;
+  }
+}
+
+.sub {
+  max-width: 560px;
+  margin: 0 auto 36px;
+  color: var(--muted);
+  font-size: 1.08rem;
+}
+
+.heroStats {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  margin-top: 28px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  flex-wrap: wrap;
+
+  strong {
+    color: var(--teal-600);
+    font-size: 1.05rem;
+  }
+}
+
+.section {
+  margin-top: 72px;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  h2 {
+    font-size: 1.8rem;
+  }
+}
+
+.viewAll {
+  font-weight: 600;
+  color: var(--teal-500);
+  font-size: 0.95rem;
+
+  &:hover {
+    color: var(--teal-600);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+
+  @media (max-width: 960px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.collections {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+
+  @media (max-width: 960px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.collection {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 26px 22px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-soft);
+  }
+
+  h3 {
+    margin: 12px 0 6px;
+    font-size: 1.15rem;
+  }
+
+  p {
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+}
+
+.collectionEmoji {
+  font-size: 1.9rem;
+}
+
+.how {
+  background: var(--deep);
+  border-radius: var(--radius-lg);
+  padding: 56px 48px;
+  color: var(--ice-100);
+
+  h2 {
+    color: var(--white);
+    font-size: 1.8rem;
+    margin-bottom: 32px;
+  }
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+
+  h3 {
+    color: var(--white);
+    font-size: 1.15rem;
+    margin: 14px 0 8px;
+  }
+
+  p {
+    font-size: 0.92rem;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stepNum {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--teal-400);
+  color: var(--white);
+  font-weight: 700;
+}

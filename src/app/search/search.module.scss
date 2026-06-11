@@ -1,0 +1,133 @@
+.page {
+  padding-top: 28px;
+}
+
+.searchWrap {
+  margin-bottom: 32px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 32px;
+  align-items: start;
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.filters {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  position: sticky;
+  top: 88px;
+
+  h3 {
+    margin-bottom: 16px;
+    font-size: 1.2rem;
+  }
+
+  @media (max-width: 860px) {
+    position: static;
+  }
+}
+
+.filterGroup {
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+
+  h4 {
+    font-family: var(--font-body), sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--teal-600);
+    margin-bottom: 10px;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--teal-500);
+  }
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 4px 0;
+  font-size: 0.92rem;
+  cursor: pointer;
+
+  input {
+    accent-color: var(--teal-500);
+  }
+}
+
+.rangeValue {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.resultsHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  p {
+    color: var(--muted);
+
+    strong {
+      color: var(--deep);
+    }
+  }
+}
+
+.sort {
+  font-size: 0.9rem;
+  color: var(--muted);
+
+  select {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    background: var(--white);
+    margin-left: 6px;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.empty {
+  text-align: center;
+  padding: 80px 20px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+
+  span {
+    font-size: 2.6rem;
+  }
+
+  h3 {
+    margin: 12px 0 6px;
+  }
+
+  p {
+    color: var(--muted);
+  }
+}

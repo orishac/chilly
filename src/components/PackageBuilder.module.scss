@@ -1,0 +1,140 @@
+.builder {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-lift);
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+
+  h2 {
+    font-size: 1.4rem;
+    margin-bottom: 18px;
+  }
+
+  @media (max-width: 960px) {
+    max-height: none;
+  }
+}
+
+.dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr 72px;
+  gap: 10px;
+  margin-bottom: 22px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    span {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--teal-600);
+    }
+
+    input,
+    select {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      font-size: 0.88rem;
+      background: var(--white);
+    }
+  }
+}
+
+.step {
+  margin-bottom: 22px;
+
+  h3 {
+    font-family: var(--font-body), sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--teal-600);
+    margin-bottom: 10px;
+  }
+}
+
+.option {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: var(--teal-400);
+  }
+
+  input {
+    margin-top: 4px;
+    accent-color: var(--teal-500);
+  }
+
+  strong {
+    font-size: 0.95rem;
+    color: var(--deep);
+  }
+
+  p {
+    font-size: 0.84rem;
+    color: var(--muted);
+  }
+}
+
+.selected {
+  border-color: var(--teal-500);
+  background: var(--ice-100);
+}
+
+.optionMeta {
+  font-weight: 600;
+  color: var(--teal-600) !important;
+  margin-top: 2px;
+}
+
+.warn {
+  color: var(--chili-dark);
+  font-size: 0.86rem;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.summary {
+  border-top: 2px solid var(--line);
+  padding-top: 16px;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.92rem;
+  color: var(--muted);
+  padding: 3px 0;
+}
+
+.total {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--deep);
+  margin-top: 8px;
+
+  span:last-child {
+    font-family: var(--font-display), Georgia, serif;
+    font-size: 1.4rem;
+  }
+}
+
+.cta {
+  width: 100%;
+  margin-top: 14px;
+}

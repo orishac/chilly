@@ -1,0 +1,29 @@
+.footer {
+  margin-top: 80px;
+  background: var(--deep);
+  color: var(--ice-200);
+  padding: 48px 0;
+  font-size: 0.9rem;
+}
+
+.inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+  color: var(--white);
+}
+
+.note {
+  opacity: 0.7;
+}
