@@ -23,7 +23,7 @@ export default function CheckoutClient() {
   });
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("chilly-booking");
+    const raw = sessionStorage.getItem("chilly-booking:v1");
     if (raw) {
       try {
         setSelection(JSON.parse(raw));
@@ -68,8 +68,8 @@ export default function CheckoutClient() {
     setSubmitting(true);
     const ref = `CHL-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
     const confirmation: Confirmation = { ref, selection, name: form.firstName };
-    sessionStorage.setItem("chilly-confirmation", JSON.stringify(confirmation));
-    sessionStorage.removeItem("chilly-booking");
+    sessionStorage.setItem("chilly-confirmation:v1", JSON.stringify(confirmation));
+    sessionStorage.removeItem("chilly-booking:v1");
     // small delay so the mock payment feels real
     setTimeout(() => router.push("/confirmation"), 900);
   }

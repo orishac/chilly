@@ -12,7 +12,7 @@ export default function ConfirmationClient() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("chilly-confirmation");
+    const raw = sessionStorage.getItem("chilly-confirmation:v1");
     if (raw) {
       try {
         setConfirmation(JSON.parse(raw));

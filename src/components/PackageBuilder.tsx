@@ -1,27 +1,65 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useReducer } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { EXTRAS, SPA_PACKAGES } from "@/lib/data";
 import { addDays, formatPrice, nightsBetween, todayISO } from "@/lib/format";
 import { openDatePicker } from "@/lib/datePicker";
-import type { BookingSelection, PackageBuilderProps } from "./PackageBuilder.types";
+import type {
+  BookingSelection,
+  BuilderAction,
+  BuilderState,
+  PackageBuilderProps,
+} from "./PackageBuilder.types";
 import styles from "./PackageBuilder.module.scss";
+
+function builderReducer(state: BuilderState, action: BuilderAction): BuilderState {
+  switch (action.type) {
+    case "setCheckIn":
+      return {
+        ...state,
+        checkIn: action.value,
+        // keep check-out after check-in
+        checkOut:
+          action.value >= state.checkOut
+            ? addDays(action.value, 3)
+            : state.checkOut,
+      };
+    case "setCheckOut":
+      return { ...state, checkOut: action.value };
+    case "setGuests":
+      return { ...state, guests: action.value };
+    case "setRoom":
+      return { ...state, roomId: action.value };
+    case "setPackage":
+      return { ...state, packageId: action.value };
+    case "toggleExtra":
+      return {
+        ...state,
+        extraIds: state.extraIds.includes(action.id)
+          ? state.extraIds.filter((e) => e !== action.id)
+          : [...state.extraIds, action.id],
+      };
+  }
+}
 
 export default function PackageBuilder({ resort }: PackageBuilderProps) {
   const router = useRouter();
   const params = useSearchParams();
 
-  const [checkIn, setCheckIn] = useState(
-    params.get("checkIn") ?? addDays(todayISO(), 14)
+  const [state, dispatch] = useReducer(
+    builderReducer,
+    null,
+    (): BuilderState => ({
+      checkIn: params.get("checkIn") ?? addDays(todayISO(), 14),
+      checkOut: params.get("checkOut") ?? addDays(todayISO(), 19),
+      guests: Number(params.get("guests") ?? 2),
+      roomId: resort.rooms[0].id,
+      packageId: null,
+      extraIds: [],
+    })
   );
-  const [checkOut, setCheckOut] = useState(
-    params.get("checkOut") ?? addDays(todayISO(), 19)
-  );
-  const [guests, setGuests] = useState(Number(params.get("guests") ?? 2));
-  const [roomId, setRoomId] = useState(resort.rooms[0].id);
-  const [packageId, setPackageId] = useState<string | null>(null);
-  const [extraIds, setExtraIds] = useState<string[]>([]);
+  const { checkIn, checkOut, guests, roomId, packageId, extraIds } = state;
 
   const nights = nightsBetween(checkIn, checkOut);
   const room = resort.rooms.find((r) => r.id === roomId) ?? resort.rooms[0];
@@ -41,12 +79,6 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
     return { roomTotal, spaTotal, extrasTotal, total: roomTotal + spaTotal + extrasTotal };
   }, [room, nights, spa, guests, extraIds]);
 
-  function toggleExtra(id: string) {
-    setExtraIds((prev) =>
-      prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id]
-    );
-  }
-
   function continueToCheckout() {
     const selection: BookingSelection = {
       resortId: resort.id,
@@ -58,7 +90,7 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
       guests,
       total: totals.total,
     };
-    sessionStorage.setItem("chilly-booking", JSON.stringify(selection));
+    sessionStorage.setItem("chilly-booking:v1", JSON.stringify(selection));
     router.push("/checkout");
   }
 
@@ -77,11 +109,9 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
             value={checkIn}
             min={todayISO()}
             onClick={openDatePicker}
-            onChange={(e) => {
-              setCheckIn(e.target.value);
-              if (e.target.value >= checkOut)
-                setCheckOut(addDays(e.target.value, 3));
-            }}
+            onChange={(e) =>
+              dispatch({ type: "setCheckIn", value: e.target.value })
+            }
           />
         </label>
         <label>
@@ -91,12 +121,19 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
             value={checkOut}
             min={addDays(checkIn, 1)}
             onClick={openDatePicker}
-            onChange={(e) => setCheckOut(e.target.value)}
+            onChange={(e) =>
+              dispatch({ type: "setCheckOut", value: e.target.value })
+            }
           />
         </label>
         <label>
           <span>Guests</span>
-          <select value={guests} onChange={(e) => setGuests(Number(e.target.value))}>
+          <select
+            value={guests}
+            onChange={(e) =>
+              dispatch({ type: "setGuests", value: Number(e.target.value) })
+            }
+          >
             {[1, 2, 3, 4, 5, 6].map((n) => (
               <option key={n} value={n}>
                 {n}
@@ -117,7 +154,7 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
               type="radio"
               name="room"
               checked={roomId === r.id}
-              onChange={() => setRoomId(r.id)}
+              onChange={() => dispatch({ type: "setRoom", value: r.id })}
             />
             <div>
               <strong>{r.name}</strong>
@@ -144,7 +181,7 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
             type="radio"
             name="spa"
             checked={packageId === null}
-            onChange={() => setPackageId(null)}
+            onChange={() => dispatch({ type: "setPackage", value: null })}
           />
           <div>
             <strong>No package</strong>
@@ -160,7 +197,7 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
               type="radio"
               name="spa"
               checked={packageId === p.id}
-              onChange={() => setPackageId(p.id)}
+              onChange={() => dispatch({ type: "setPackage", value: p.id })}
             />
             <div>
               <strong>{p.name}</strong>
@@ -183,7 +220,7 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
             <input
               type="checkbox"
               checked={extraIds.includes(e.id)}
-              onChange={() => toggleExtra(e.id)}
+              onChange={() => dispatch({ type: "toggleExtra", id: e.id })}
             />
             <div>
               <strong>{e.name}</strong>
