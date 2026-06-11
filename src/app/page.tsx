@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
 import ResortCard from "@/components/ResortCard";
 import { RESORTS } from "@/lib/data";
 import styles from "./page.module.scss";
+
+export const metadata: Metadata = {
+  title: "Chilly — Resort & Spa Vacations",
+  description:
+    "Handpicked spa resorts, treatments, flights and transfers — bundled into one easy booking. Pick a resort, build your package, check out once.",
+};
 
 const COLLECTIONS = [
   { tag: "hot-springs", emoji: "♨️", title: "Hot springs", blurb: "Volcano-fed pools and ancient bathing towns." },
@@ -12,7 +19,7 @@ const COLLECTIONS = [
 ];
 
 export default function Home() {
-  const featured = [...RESORTS].sort((a, b) => b.rating - a.rating).slice(0, 3);
+  const featured = RESORTS.toSorted((a, b) => b.rating - a.rating).slice(0, 3);
 
   return (
     <>

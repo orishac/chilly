@@ -1,9 +1,11 @@
+const priceFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
+
 export function formatPrice(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return priceFormatter.format(amount);
 }
 
 export function nightsBetween(checkIn: string, checkOut: string): number {

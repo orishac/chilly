@@ -1,29 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { getResort } from "@/lib/data";
 import { formatDate, formatPrice } from "@/lib/format";
+import { useSessionStorageItem } from "@/lib/useSessionStorageItem";
 import type { Confirmation } from "../checkout/CheckoutClient.types";
 import styles from "./confirmation.module.scss";
 
 export default function ConfirmationClient() {
-  const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    const raw = sessionStorage.getItem("chilly-confirmation:v1");
-    if (raw) {
-      try {
-        setConfirmation(JSON.parse(raw));
-      } catch {
-        // corrupted state — show empty state
-      }
+  const raw = useSessionStorageItem("chilly-confirmation:v1");
+  const confirmation = useMemo<Confirmation | null>(() => {
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      // corrupted state — show empty state
+      return null;
     }
-    setLoaded(true);
-  }, []);
+  }, [raw]);
 
-  if (!loaded) return null;
+  // undefined = server render / hydration, before sessionStorage is readable
+  if (raw === undefined) return null;
 
   const resort = confirmation
     ? getResort(confirmation.selection.resortId)

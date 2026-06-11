@@ -261,6 +261,7 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
           <span>{formatPrice(totals.total)}</span>
         </div>
         <button
+          type="button"
           className={`btn btn-primary ${styles.cta}`}
           disabled={!canContinue}
           onClick={continueToCheckout}
