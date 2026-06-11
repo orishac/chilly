@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { EXTRAS, SPA_PACKAGES, getResort } from "@/lib/data";
-import { formatDate, formatPrice, nightsBetween } from "@/lib/format";
+import { formatDate, formatGuests, formatPrice, nightsBetween } from "@/lib/format";
 import { useSessionStorageItem } from "@/lib/useSessionStorageItem";
 import type { BookingSelection } from "@/components/PackageBuilder.types";
 import type { Confirmation } from "./CheckoutClient.types";
@@ -12,7 +12,7 @@ import styles from "./checkout.module.scss";
 
 export default function CheckoutClient() {
   const router = useRouter();
-  const raw = useSessionStorageItem("chilly-booking:v1");
+  const raw = useSessionStorageItem("chilly-booking:v2");
   const selection = useMemo<BookingSelection | null>(() => {
     if (!raw) return null;
     try {
@@ -70,8 +70,8 @@ export default function CheckoutClient() {
     // because `selection` reads live from chilly-booking:v1 — clearing it any
     // earlier would blank the page mid-"payment"
     setTimeout(() => {
-      sessionStorage.setItem("chilly-confirmation:v1", JSON.stringify(confirmation));
-      sessionStorage.removeItem("chilly-booking:v1");
+      sessionStorage.setItem("chilly-confirmation:v2", JSON.stringify(confirmation));
+      sessionStorage.removeItem("chilly-booking:v2");
       router.push("/confirmation");
     }, 900);
   }
@@ -171,7 +171,7 @@ export default function CheckoutClient() {
             </div>
             <div className={styles.line}>
               <span>Guests</span>
-              <span>{selection.guests}</span>
+              <span>{formatGuests(selection.adults, selection.children)}</span>
             </div>
             <hr />
             {room && (
@@ -185,9 +185,10 @@ export default function CheckoutClient() {
             {spa && (
               <div className={styles.line}>
                 <span>
-                  {spa.name} × {selection.guests}
+                  {spa.name} × {selection.adults}{" "}
+                  {selection.adults === 1 ? "adult" : "adults"}
                 </span>
-                <span>{formatPrice(spa.pricePerPerson * selection.guests)}</span>
+                <span>{formatPrice(spa.pricePerPerson * selection.adults)}</span>
               </div>
             )}
             {extras.map((e) => (

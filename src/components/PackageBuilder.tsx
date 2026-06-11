@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { EXTRAS, SPA_PACKAGES } from "@/lib/data";
 import { addDays, formatPrice, nightsBetween, todayISO } from "@/lib/format";
 import { openDatePicker } from "@/lib/datePicker";
+import GuestPicker from "./GuestPicker";
 import type {
   BookingSelection,
   BuilderAction,
@@ -46,6 +47,7 @@ function builderReducer(state: BuilderState, action: BuilderAction): BuilderStat
 export default function PackageBuilder({ resort }: PackageBuilderProps) {
   const router = useRouter();
   const params = useSearchParams();
+  const adultsOnly = resort.tags.includes("adults-only");
 
   const [state, dispatch] = useReducer(
     builderReducer,
@@ -53,13 +55,18 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
     (): BuilderState => ({
       checkIn: params.get("checkIn") ?? addDays(todayISO(), 14),
       checkOut: params.get("checkOut") ?? addDays(todayISO(), 19),
-      guests: Number(params.get("guests") ?? 2),
+      guests: {
+        // `guests` is the legacy param name from before the adults/children split
+        adults: Number(params.get("adults") ?? params.get("guests") ?? 2),
+        children: adultsOnly ? 0 : Number(params.get("children") ?? 0),
+      },
       roomId: resort.rooms[0].id,
       packageId: null,
       extraIds: [],
     })
   );
   const { checkIn, checkOut, guests, roomId, packageId, extraIds } = state;
+  const totalGuests = guests.adults + guests.children;
 
   const nights = nightsBetween(checkIn, checkOut);
   const room = resort.rooms.find((r) => r.id === roomId) ?? resort.rooms[0];
@@ -67,11 +74,12 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
 
   const totals = useMemo(() => {
     const roomTotal = room.pricePerNight * nights;
-    const spaTotal = spa ? spa.pricePerPerson * guests : 0;
+    // spa treatments are adults-only, so children don't count here
+    const spaTotal = spa ? spa.pricePerPerson * guests.adults : 0;
     const extrasTotal = extraIds.reduce((sum, id) => {
       const extra = EXTRAS.find((e) => e.id === id);
       if (!extra) return sum;
-      const units = extra.per === "person" ? guests : 1;
+      const units = extra.per === "person" ? guests.adults + guests.children : 1;
       // breakfast is priced per person per night
       const nightsMult = extra.id === "breakfast" ? nights : 1;
       return sum + extra.price * units * nightsMult;
@@ -87,14 +95,15 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
       extraIds,
       checkIn,
       checkOut,
-      guests,
+      adults: guests.adults,
+      children: guests.children,
       total: totals.total,
     };
-    sessionStorage.setItem("chilly-booking:v1", JSON.stringify(selection));
+    sessionStorage.setItem("chilly-booking:v2", JSON.stringify(selection));
     router.push("/checkout");
   }
 
-  const roomFitsGuests = room.sleeps >= guests;
+  const roomFitsGuests = room.sleeps >= totalGuests;
   const canContinue = nights > 0 && roomFitsGuests;
 
   return (
@@ -126,21 +135,14 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
             }
           />
         </label>
-        <label>
+        <div className={styles.guestsField}>
           <span>Guests</span>
-          <select
+          <GuestPicker
             value={guests}
-            onChange={(e) =>
-              dispatch({ type: "setGuests", value: Number(e.target.value) })
-            }
-          >
-            {[1, 2, 3, 4, 5, 6].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
+            onChange={(value) => dispatch({ type: "setGuests", value })}
+            allowChildren={!adultsOnly}
+          />
+        </div>
       </div>
 
       <section className={styles.step}>
@@ -167,7 +169,8 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
         ))}
         {!roomFitsGuests && (
           <p className={styles.warn}>
-            This room sleeps {room.sleeps} — pick a bigger room or fewer guests.
+            This room sleeps {room.sleeps} and you&apos;re {totalGuests} — pick
+            a bigger room or fewer guests.
           </p>
         )}
       </section>
@@ -203,7 +206,7 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
               <strong>{p.name}</strong>
               <p>{p.description}</p>
               <p className={styles.optionMeta}>
-                {formatPrice(p.pricePerPerson)}/person
+                {formatPrice(p.pricePerPerson)}/adult
               </p>
             </div>
           </label>
@@ -245,7 +248,8 @@ export default function PackageBuilder({ resort }: PackageBuilderProps) {
         {spa && (
           <div className={styles.line}>
             <span>
-              {spa.name} × {guests}
+              {spa.name} × {guests.adults}{" "}
+              {guests.adults === 1 ? "adult" : "adults"}
             </span>
             <span>{formatPrice(totals.spaTotal)}</span>
           </div>

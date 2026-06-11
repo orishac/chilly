@@ -8,6 +8,13 @@ export function formatPrice(amount: number): string {
   return priceFormatter.format(amount);
 }
 
+export function formatGuests(adults: number, children: number): string {
+  const parts = [`${adults} ${adults === 1 ? "adult" : "adults"}`];
+  if (children > 0)
+    parts.push(`${children} ${children === 1 ? "child" : "children"}`);
+  return parts.join(" · ");
+}
+
 export function nightsBetween(checkIn: string, checkOut: string): number {
   const a = new Date(checkIn).getTime();
   const b = new Date(checkOut).getTime();

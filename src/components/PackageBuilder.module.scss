@@ -18,11 +18,12 @@
 
 .dates {
   display: grid;
-  grid-template-columns: 1fr 1fr 72px;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-bottom: 22px;
 
-  label {
+  label,
+  .guestsField {
     display: flex;
     flex-direction: column;
     gap: 3px;
@@ -43,6 +44,19 @@
       font-size: 0.88rem;
       background: var(--white);
     }
+  }
+}
+
+.guestsField {
+  grid-column: 1 / -1;
+
+  // wraps the GuestPicker so its trigger reads like the date inputs above
+  > div {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    font-size: 0.88rem;
+    background: var(--white);
   }
 }
 

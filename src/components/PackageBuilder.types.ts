@@ -1,4 +1,5 @@
 import type { Resort } from "@/lib/data.types";
+import type { GuestCounts } from "./GuestPicker.types";
 
 export interface PackageBuilderProps {
   resort: Resort;
@@ -7,7 +8,7 @@ export interface PackageBuilderProps {
 export interface BuilderState {
   checkIn: string;
   checkOut: string;
-  guests: number;
+  guests: GuestCounts;
   roomId: string;
   packageId: string | null;
   extraIds: string[];
@@ -16,7 +17,7 @@ export interface BuilderState {
 export type BuilderAction =
   | { type: "setCheckIn"; value: string }
   | { type: "setCheckOut"; value: string }
-  | { type: "setGuests"; value: number }
+  | { type: "setGuests"; value: GuestCounts }
   | { type: "setRoom"; value: string }
   | { type: "setPackage"; value: string | null }
   | { type: "toggleExtra"; id: string };
@@ -29,6 +30,7 @@ export interface BookingSelection {
   extraIds: string[];
   checkIn: string;
   checkOut: string;
-  guests: number;
+  adults: number;
+  children: number;
   total: number;
 }

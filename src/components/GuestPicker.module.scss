@@ -1,0 +1,133 @@
+.picker {
+  position: relative;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 2px 0;
+  font-size: inherit;
+  color: var(--ink);
+  text-align: left;
+  white-space: nowrap;
+
+  &::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-right: 1.5px solid var(--muted);
+    border-bottom: 1.5px solid var(--muted);
+    transform: rotate(45deg) translateY(-2px);
+    transition: transform 0.15s ease;
+  }
+
+  &[aria-expanded="true"]::after {
+    transform: rotate(225deg) translateY(-2px);
+  }
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: -16px;
+  z-index: 30;
+  min-width: 264px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lift);
+  padding: 6px 18px 14px;
+  animation: pop 0.18s ease;
+
+  @media (max-width: 860px) {
+    left: 0;
+    right: 0;
+    min-width: 0;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+
+  &:not(:last-of-type) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+.rowLabel {
+  strong {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--deep);
+  }
+
+  small {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--teal-400);
+    background: transparent;
+    color: var(--teal-600);
+    font-size: 1.05rem;
+    line-height: 1;
+    transition: background 0.15s ease;
+
+    &:hover:not(:disabled) {
+      background: var(--ice-100);
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+  }
+
+  span {
+    min-width: 18px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--deep);
+  }
+}
+
+.hint {
+  margin-top: 10px;
+  font-size: 0.76rem;
+  color: var(--muted);
+}

@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { addDays, todayISO } from "@/lib/format";
 import { openDatePicker } from "@/lib/datePicker";
+import GuestPicker from "./GuestPicker";
+import type { GuestCounts } from "./GuestPicker.types";
 import type { SearchBarProps } from "./SearchBar.types";
 import styles from "./SearchBar.module.scss";
 
@@ -11,13 +13,21 @@ export default function SearchBar({
   initialQuery = "",
   initialCheckIn,
   initialCheckOut,
-  initialGuests = 2,
+  initialAdults = 2,
+  initialChildren = 0,
+  allowChildren = true,
 }: SearchBarProps) {
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
   const [checkIn, setCheckIn] = useState(initialCheckIn ?? addDays(todayISO(), 14));
   const [checkOut, setCheckOut] = useState(initialCheckOut ?? addDays(todayISO(), 19));
-  const [guests, setGuests] = useState(initialGuests);
+  const [guests, setGuests] = useState<GuestCounts>({
+    adults: initialAdults,
+    children: initialChildren,
+  });
+  const effectiveGuests: GuestCounts = allowChildren
+    ? guests
+    : { adults: guests.adults, children: 0 };
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -25,7 +35,8 @@ export default function SearchBar({
     if (query.trim()) params.set("q", query.trim());
     params.set("checkIn", checkIn);
     params.set("checkOut", checkOut);
-    params.set("guests", String(guests));
+    params.set("adults", String(effectiveGuests.adults));
+    params.set("children", String(effectiveGuests.children));
     router.push(`/search?${params.toString()}`);
   }
 
@@ -63,16 +74,14 @@ export default function SearchBar({
           onChange={(e) => setCheckOut(e.target.value)}
         />
       </label>
-      <label className={styles.field}>
+      <div className={styles.field}>
         <span>Guests</span>
-        <select value={guests} onChange={(e) => setGuests(Number(e.target.value))}>
-          {[1, 2, 3, 4, 5, 6].map((n) => (
-            <option key={n} value={n}>
-              {n} {n === 1 ? "guest" : "guests"}
-            </option>
-          ))}
-        </select>
-      </label>
+        <GuestPicker
+          value={effectiveGuests}
+          onChange={setGuests}
+          allowChildren={allowChildren}
+        />
+      </div>
       <button type="submit" className={`btn btn-primary ${styles.submit}`}>
         Search
       </button>

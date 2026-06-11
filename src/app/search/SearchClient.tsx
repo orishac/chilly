@@ -16,12 +16,19 @@ export default function SearchClient() {
   const query = params.get("q") ?? "";
   const checkIn = params.get("checkIn") ?? undefined;
   const checkOut = params.get("checkOut") ?? undefined;
-  const guests = Number(params.get("guests") ?? 2);
-
   const [activeTags, setActiveTags] = useState<ResortTag[]>(() => {
     const t = params.get("tag");
     return t && t in TAG_LABELS ? [t as ResortTag] : [];
   });
+
+  // `guests` is the legacy param name from before the adults/children split
+  const adults = Number(params.get("adults") ?? params.get("guests") ?? 2);
+  // children make no sense while browsing adults-only resorts
+  const adultsOnlyActive = activeTags.includes("adults-only");
+  const children = adultsOnlyActive
+    ? 0
+    : Number(params.get("children") ?? 0);
+  const totalGuests = adults + children;
   const [maxPrice, setMaxPrice] = useState(1700);
   const [minRating, setMinRating] = useState(0);
   const [sort, setSort] = useState<SortKey>("recommended");
@@ -36,11 +43,13 @@ export default function SearchClient() {
           .toLowerCase()
           .includes(q);
       const matchesTags = activeTags.every((t) => r.tags.includes(t));
-      const fitsGuests = r.rooms.some((room) => room.sleeps >= guests);
+      const fitsGuests = r.rooms.some((room) => room.sleeps >= totalGuests);
+      const suitsChildren = children === 0 || !r.tags.includes("adults-only");
       return (
         matchesQuery &&
         matchesTags &&
         fitsGuests &&
+        suitsChildren &&
         r.pricePerNight <= maxPrice &&
         r.rating >= minRating
       );
@@ -56,7 +65,7 @@ export default function SearchClient() {
       default:
         return list.sort((a, b) => b.rating * b.reviewCount - a.rating * a.reviewCount);
     }
-  }, [query, activeTags, maxPrice, minRating, sort, guests]);
+  }, [query, activeTags, maxPrice, minRating, sort, totalGuests, children]);
 
   function toggleTag(tag: ResortTag) {
     setActiveTags((prev) =>
@@ -67,7 +76,8 @@ export default function SearchClient() {
   const tripParams = new URLSearchParams();
   if (checkIn) tripParams.set("checkIn", checkIn);
   if (checkOut) tripParams.set("checkOut", checkOut);
-  tripParams.set("guests", String(guests));
+  tripParams.set("adults", String(adults));
+  tripParams.set("children", String(children));
   const tripSearch = `?${tripParams.toString()}`;
 
   return (
@@ -77,7 +87,9 @@ export default function SearchClient() {
           initialQuery={query}
           initialCheckIn={checkIn}
           initialCheckOut={checkOut}
-          initialGuests={guests}
+          initialAdults={adults}
+          initialChildren={children}
+          allowChildren={!adultsOnlyActive}
         />
       </div>
 
@@ -138,6 +150,11 @@ export default function SearchClient() {
                 <>
                   {" "}for <strong>“{query}”</strong>
                 </>
+              )}
+              {children > 0 && (
+                <span className={styles.kidNote}>
+                  {" "}· adults-only resorts hidden
+                </span>
               )}
             </p>
             <label className={styles.sort}>

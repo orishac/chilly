@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { getResort } from "@/lib/data";
-import { formatDate, formatPrice } from "@/lib/format";
+import { formatDate, formatGuests, formatPrice } from "@/lib/format";
 import { useSessionStorageItem } from "@/lib/useSessionStorageItem";
 import type { Confirmation } from "../checkout/CheckoutClient.types";
 import styles from "./confirmation.module.scss";
 
 export default function ConfirmationClient() {
-  const raw = useSessionStorageItem("chilly-confirmation:v1");
+  const raw = useSessionStorageItem("chilly-confirmation:v2");
   const confirmation = useMemo<Confirmation | null>(() => {
     if (!raw) return null;
     try {
@@ -70,7 +70,7 @@ export default function ConfirmationClient() {
             </p>
             <p>
               {formatDate(selection.checkIn)} → {formatDate(selection.checkOut)} ·{" "}
-              {selection.guests} {selection.guests === 1 ? "guest" : "guests"}
+              {formatGuests(selection.adults, selection.children)}
             </p>
             <p className={styles.total}>Paid {formatPrice(selection.total)}</p>
           </div>
