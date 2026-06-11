@@ -100,9 +100,10 @@ export default function SearchClient() {
           </div>
 
           <div className={styles.filterGroup}>
-            <h4>Max price / night</h4>
+            <h4 id="max-price-label">Max price / night</h4>
             <input
               type="range"
+              aria-labelledby="max-price-label"
               min={250}
               max={1700}
               step={50}

@@ -2,17 +2,26 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { EXTRAS, SPA_PACKAGES, getResort } from "@/lib/data";
 import { formatDate, formatPrice, nightsBetween } from "@/lib/format";
+import { useSessionStorageItem } from "@/lib/useSessionStorageItem";
 import type { BookingSelection } from "@/components/PackageBuilder.types";
 import type { Confirmation } from "./CheckoutClient.types";
 import styles from "./checkout.module.scss";
 
 export default function CheckoutClient() {
   const router = useRouter();
-  const [selection, setSelection] = useState<BookingSelection | null>(null);
-  const [loaded, setLoaded] = useState(false);
+  const raw = useSessionStorageItem("chilly-booking:v1");
+  const selection = useMemo<BookingSelection | null>(() => {
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      // corrupted state — treat as no booking
+      return null;
+    }
+  }, [raw]);
   const [submitting, setSubmitting] = useState(false);
 
   const [form, setForm] = useState({
@@ -22,19 +31,8 @@ export default function CheckoutClient() {
     card: "",
   });
 
-  useEffect(() => {
-    const raw = sessionStorage.getItem("chilly-booking:v1");
-    if (raw) {
-      try {
-        setSelection(JSON.parse(raw));
-      } catch {
-        // corrupted state — treat as no booking
-      }
-    }
-    setLoaded(true);
-  }, []);
-
-  if (!loaded) return null;
+  // undefined = server render / hydration, before sessionStorage is readable
+  if (raw === undefined) return null;
 
   const resort = selection ? getResort(selection.resortId) : undefined;
 
@@ -68,10 +66,14 @@ export default function CheckoutClient() {
     setSubmitting(true);
     const ref = `CHL-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
     const confirmation: Confirmation = { ref, selection, name: form.firstName };
-    sessionStorage.setItem("chilly-confirmation:v1", JSON.stringify(confirmation));
-    sessionStorage.removeItem("chilly-booking:v1");
-    // small delay so the mock payment feels real
-    setTimeout(() => router.push("/confirmation"), 900);
+    // small delay so the mock payment feels real; storage writes stay in here
+    // because `selection` reads live from chilly-booking:v1 — clearing it any
+    // earlier would blank the page mid-"payment"
+    setTimeout(() => {
+      sessionStorage.setItem("chilly-confirmation:v1", JSON.stringify(confirmation));
+      sessionStorage.removeItem("chilly-booking:v1");
+      router.push("/confirmation");
+    }, 900);
   }
 
   function set(field: keyof typeof form, value: string) {
