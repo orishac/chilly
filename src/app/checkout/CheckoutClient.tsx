@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EXTRAS, SPA_PACKAGES, getResort } from "@/lib/data";
 import { formatDate, formatPrice, nightsBetween } from "@/lib/format";
-import { BookingSelection } from "@/lib/types";
+import type { BookingSelection } from "@/components/PackageBuilder.types";
+import type { Confirmation } from "./CheckoutClient.types";
 import styles from "./checkout.module.scss";
 
 export default function CheckoutClient() {
@@ -22,7 +23,7 @@ export default function CheckoutClient() {
   });
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("chilly-booking");
+    const raw = sessionStorage.getItem("chilly-booking:v1");
     if (raw) {
       try {
         setSelection(JSON.parse(raw));
@@ -63,14 +64,12 @@ export default function CheckoutClient() {
 
   function confirm(e: React.FormEvent) {
     e.preventDefault();
-    if (!formValid) return;
+    if (!formValid || !selection) return;
     setSubmitting(true);
     const ref = `CHL-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-    sessionStorage.setItem(
-      "chilly-confirmation",
-      JSON.stringify({ ref, selection, name: form.firstName })
-    );
-    sessionStorage.removeItem("chilly-booking");
+    const confirmation: Confirmation = { ref, selection, name: form.firstName };
+    sessionStorage.setItem("chilly-confirmation:v1", JSON.stringify(confirmation));
+    sessionStorage.removeItem("chilly-booking:v1");
     // small delay so the mock payment feels real
     setTimeout(() => router.push("/confirmation"), 900);
   }

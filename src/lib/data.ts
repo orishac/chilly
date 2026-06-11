@@ -1,4 +1,4 @@
-import { Extra, Resort, SpaPackage, ResortTag } from "./types";
+import type { Extra, Resort, SpaPackage, ResortTag } from "./data.types";
 
 export const TAG_LABELS: Record<ResortTag, string> = {
   "thermal-pools": "Thermal pools",

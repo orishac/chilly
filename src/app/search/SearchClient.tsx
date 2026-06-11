@@ -5,12 +5,11 @@ import { useSearchParams } from "next/navigation";
 import SearchBar from "@/components/SearchBar";
 import ResortCard from "@/components/ResortCard";
 import { RESORTS, TAG_LABELS } from "@/lib/data";
-import { ResortTag } from "@/lib/types";
+import type { ResortTag } from "@/lib/data.types";
+import type { SortKey } from "./SearchClient.types";
 import styles from "./search.module.scss";
 
 const ALL_TAGS = Object.keys(TAG_LABELS) as ResortTag[];
-
-type SortKey = "recommended" | "price-asc" | "price-desc" | "rating";
 
 export default function SearchClient() {
   const params = useSearchParams();

@@ -4,21 +4,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getResort } from "@/lib/data";
 import { formatDate, formatPrice } from "@/lib/format";
-import { BookingSelection } from "@/lib/types";
+import type { Confirmation } from "../checkout/CheckoutClient.types";
 import styles from "./confirmation.module.scss";
-
-interface Confirmation {
-  ref: string;
-  name: string;
-  selection: BookingSelection;
-}
 
 export default function ConfirmationClient() {
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("chilly-confirmation");
+    const raw = sessionStorage.getItem("chilly-confirmation:v1");
     if (raw) {
       try {
         setConfirmation(JSON.parse(raw));

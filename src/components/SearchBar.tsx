@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { addDays, todayISO } from "@/lib/format";
 import { openDatePicker } from "@/lib/datePicker";
+import type { SearchBarProps } from "./SearchBar.types";
 import styles from "./SearchBar.module.scss";
 
 export default function SearchBar({
@@ -11,12 +12,7 @@ export default function SearchBar({
   initialCheckIn,
   initialCheckOut,
   initialGuests = 2,
-}: {
-  initialQuery?: string;
-  initialCheckIn?: string;
-  initialCheckOut?: string;
-  initialGuests?: number;
-}) {
+}: SearchBarProps) {
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
   const [checkIn, setCheckIn] = useState(initialCheckIn ?? addDays(todayISO(), 14));

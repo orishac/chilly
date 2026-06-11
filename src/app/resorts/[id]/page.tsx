@@ -10,18 +10,14 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+}: PageProps<"/resorts/[id]">) {
   const resort = getResort((await params).id);
   return { title: resort ? `${resort.name} — Chilly` : "Resort — Chilly" };
 }
 
 export default async function ResortPage({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+}: PageProps<"/resorts/[id]">) {
   const { id } = await params;
   const resort = getResort(id);
   if (!resort) notFound();
