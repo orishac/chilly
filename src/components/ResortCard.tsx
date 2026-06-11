@@ -1,16 +1,10 @@
 import Link from "next/link";
-import { Resort } from "@/lib/types";
 import { TAG_LABELS } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
+import type { ResortCardProps } from "./ResortCard.types";
 import styles from "./ResortCard.module.scss";
 
-export default function ResortCard({
-  resort,
-  search = "",
-}: {
-  resort: Resort;
-  search?: string;
-}) {
+export default function ResortCard({ resort, search = "" }: ResortCardProps) {
   return (
     <Link
       href={`/resorts/${resort.id}${search}`}

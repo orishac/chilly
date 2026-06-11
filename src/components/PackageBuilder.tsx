@@ -5,10 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { EXTRAS, SPA_PACKAGES } from "@/lib/data";
 import { addDays, formatPrice, nightsBetween, todayISO } from "@/lib/format";
 import { openDatePicker } from "@/lib/datePicker";
-import { BookingSelection, Resort } from "@/lib/types";
+import type { BookingSelection, PackageBuilderProps } from "./PackageBuilder.types";
 import styles from "./PackageBuilder.module.scss";
 
-export default function PackageBuilder({ resort }: { resort: Resort }) {
+export default function PackageBuilder({ resort }: PackageBuilderProps) {
   const router = useRouter();
   const params = useSearchParams();
 

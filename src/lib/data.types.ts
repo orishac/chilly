@@ -50,14 +50,3 @@ export interface Resort {
   tags: ResortTag[];
   rooms: Room[];
 }
-
-export interface BookingSelection {
-  resortId: string;
-  roomId: string;
-  packageId: string | null;
-  extraIds: string[];
-  checkIn: string;
-  checkOut: string;
-  guests: number;
-  total: number;
-}
